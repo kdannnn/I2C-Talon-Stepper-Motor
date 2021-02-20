@@ -1,0 +1,40 @@
+#include<Wire.h> 
+#include<Servo.h>
+Servo nps, wts;
+
+void setup() {
+ Serial.begin(9600);
+ Wire.begin();
+}
+
+void loop() {
+  //Wire.requestFrom(9, 1);
+  //byte MasterReceivestepper = Wire.read();
+  //int stepValue = analogRead(3);
+  //int dirValue = analogRead(4);
+  //byte MasterSendstepper;
+  delay(100);
+  if (Serial.available())
+  {
+    int x = Serial.read(); //try sending an int
+    {
+      if (x = 1) // x==1? originally x = 1
+      {
+        Wire.beginTransmission(9);
+        Wire.write(1); //Why do we have 1 here
+        Wire.endTransmission();
+        Serial.print("Turned on the talon");
+        x = ' ';
+      }
+      else if (x = 2)
+      {
+        Wire.beginTransmission(9);
+        Wire.write(2); 
+        Wire.endTransmission();
+        Serial.print("Turned on the stepper");
+        x = ' ';
+      }
+    }  
+  }
+  
+}
