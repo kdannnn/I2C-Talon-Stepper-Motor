@@ -1,0 +1,78 @@
+#include<Wire.h>
+#include<Servo.h>
+
+const int stepPin = 3;
+const int dirPin = 4;
+int motor = 11;
+int x = 90;
+Servo stpr, tln;
+byte SlaveReceivedstepper = 0;
+byte SlaveReceivedtalon = 0;
+byte MasterVal = 0;
+
+void setup() {
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+  stpr.attach(3); 
+  stpr.attach(4);
+  stpr.attach(11);
+  Wire.begin(9); //Wire.begin(8)?
+  Wire.onReceive(receiveEvent);
+  while (! Serial);
+  Serial.println("Enter talon or stepper");
+}
+
+void loop() 
+{
+  delay(10);
+  
+}
+
+
+void receiveEvent(int howMany){
+  MasterVal = Wire.read();
+  if(MasterVal == 1) // changed 1 to '1'
+    arduinoStepper();
+  else if(MasterVal == 2) // changed 2 to '2'
+    arduinoTalon();
+
+}
+void arduinoStepper()
+{
+  Serial.println("Slave Received From Master");
+  Serial.println(SlaveReceivedstepper );
+   digitalWrite(dirPin,HIGH); // Enables the motor to move in a particular direction
+  // Makes 200 pulses for making one full cycle rotation
+  for(int x = 0; x < 200; x++) {
+    digitalWrite(stepPin,HIGH); 
+    delayMicroseconds(500); 
+    digitalWrite(stepPin,LOW); 
+    delayMicroseconds(500); 
+  }
+  delay(1000); // One second delay
+  
+  digitalWrite(dirPin,LOW); //Changes the rotations direction
+  // Makes 400 pulses for making two full cycle rotation
+  for(int x = 0; x < 400; x++) {
+    digitalWrite(stepPin,HIGH);
+    delayMicroseconds(500);
+    digitalWrite(stepPin,LOW);
+    delayMicroseconds(500);
+  }
+  MasterVal = '0';
+}
+
+void arduinoTalon()
+{
+  Serial.println("Slave Received From Master");
+  Serial.println(SlaveReceivedtalon);
+  delay(500);
+  while(x<180) 
+  {
+    x = x + 1;
+    stpr.write(x);
+    delay(100);
+    Serial.println(x);
+  }
+  MasterVal = '0'; // added
+}
